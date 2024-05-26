@@ -27,9 +27,10 @@ Taskky is a web application designed for users to manage their daily tasks effec
 - `flask_session/`: Directory where Flask-Session stores session data.
 
 ## How to Run:
-1. Ensure Python and Flask are installed.
-2. Set up the database using the schema provided in `schema.sql`.
-3. Run the Flask application with `flask run` inside the project directory.
+1. Ensure Python is installed.
+2. Install required python libraries by using command `pip install -r requirements.txt`.
+3. Set up the database using the schema provided in `schema.sql`.
+4. Run the Flask application with `flask run` inside the project directory.
 
 ## Design Choices:
 - **Flask**: Chosen for its simplicity and Pythonic conventions, making it ideal for small to medium web applications.
