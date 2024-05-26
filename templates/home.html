@@ -1,0 +1,98 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Home
+{% endblock %}
+
+{% block main %}
+    <div class="text-center">
+    <!-- Used google icon from google fonts website -->
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+        <div class="input-group mb-3">
+        <!-- Learned and tried to make modal from boot strap website. -->
+            <input type="text" id="taskName" class="form-control mx-auto w-auto" placeholder="Add Task" aria-label="Add Task" aria-describedby="task-button">
+        <!-- Button to open the modal -->
+            <button id="addButton" type="button" class="btn btn-success">
+                Add +
+            </button>
+
+        <!-- The modal for adding new task -->
+            <div class="modal fade" id="taskModal" tabindex="-1" aria-labelledby="taskModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="taskModalLabel">Task Details</h5>
+                            <button type="button" class="btn-close btn btn-danger" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                        <!-- Add form inside modal body -->
+                            <form id="taskForm" method="post" action="/newTask">
+                                <div class="input-group mb-3">
+                                    <span class="input-group-text" id="inputGroup-sizing-default">Task</span>
+                                    <input id="modalTaskName" name="taskname" type="text" class="form-control" aria-label="Name of your task" aria-describedby="inputGroup-sizing-default">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="taskDescription" class="form-label fw-bold">Description</label>
+                                    <textarea class="form-control" name="taskdesc" id="taskDescription" rows="3"></textarea>
+                                </div>
+                                <div class="mb-3">
+                                    <label for="taskDueDate" class="form-label fw-bold">Due Date</label>
+                                    <input type="datetime-local" name="due" class="form-control" id="taskDueDate">
+                                </div>
+                            </form>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary btn-closer" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary" id="saveTask" form="taskForm">Save Task</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        <!-- End of modal -->
+
+        </div>
+        {% if tasks %}
+            <h2 class="text-decoration-underline">Your Tasks</h2>
+            <div class="container">
+                <div class="row">
+                    {% for task in tasks %}
+                        <div class="col-sm-12 col-md-6 col-lg-4 mb-4">
+                <!-- Tried making card after visiting bootstrao website -->
+                <!-- Card code here -->
+                            <div class="card text-white bg-dark">
+                                <div class="fw-bold card-header d-flex justify-content-between align-items-center">
+                                    <span id="editTask" class="text-primary material-symbols-outlined material-icons editTask" data-task-id="{{ task.id }}">
+                                        edit
+                                    </span>
+                                    <span id="taskName{{ task.id }}">{{ task.task }}</span>
+                                    <form action="/delete_task/{{ task.id }}" method="post" class="">
+                                        <button class="btn btn-link" type="submit"><span class="text-danger material-symbols-outlined material-icons">delete</span></button>
+                                    </form>
+                                </div>
+                                <div class="card-body">
+                                    <h5 id="taskDue{{ task.id }}" class="card-title">{{ task.due_date }}</h5>
+                                    <p id="taskDesc{{ task.id }}" class="card-text">{{ task.task_description }}</p>
+                                </div>
+                    <!-- If task is not completed, shows option to mark it complete -->
+                                {% if task.completed == 0 %}
+                                    <div class="card-footer bg-transparent border-success">
+                                        <form action="/done/0/{{ task.id }}" method="post">
+                                            <button class="btn btn-success" type="submit">Completed</button>
+                                        </form>
+                                    </div>
+                    <!-- Else shows option for mark it as incomplete -->
+                                {% else %}
+                                    <div class="card-footer bg-transparent border-success">
+                                        <form action="/done/1/{{ task.id }}" method="post" class="">
+                                            <button class="btn btn-danger" type="submit">Mark as incomplete</button>
+                                        </form>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
