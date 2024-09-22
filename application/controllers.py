@@ -1,3 +1,5 @@
+import datetime
+
 from flask import Flask, request, redirect, flash, session
 from flask import render_template
 from flask import current_app as app
@@ -121,5 +123,84 @@ def logout():
     session.clear()
 
     # Redirect user to login form
+    return redirect("/")
+
+
+@app.route("/newTask", methods=["GET", "POST"])
+def newTask():
+    if request.method == "POST":
+        taskname = request.form.get("taskname")
+        taskdesc = request.form.get("taskdesc")
+        due = request.form.get("due")
+
+        if not taskname:
+            flash(f"You must provide task.", category="warning")
+            return redirect("/")
+        if not taskdesc:
+            flash(f"You must provide task description.", category="warning")
+            return redirect("/")
+        if not due:
+            flash(f"You must provide task due date.", category="warning")
+            return redirect("/")
+
+        # Convert due_date from 'YYYY-MM-DDTHH:MM' to 'YYYY-MM-DD HH:MM:SS'
+        due_date = due.split('T')
+        date = due_date[0].split("-")
+        time = due_date[1].split(":") 
+        due_date = datetime.datetime(year=int(date[0]), month=int(date[1]), day=int(date[2]), hour=int(time[0]), minute=int(time[1]))
+        print(due_date)
+        # Get user id
+        user_id = session["user_id"]
+
+        user = Users.query.filter(Users.user_id==user_id).one()
+        newtask = Tasks(task=taskname, task_description=taskdesc, due_date=due_date)
+        user.tasks.append(newtask)
+        try:
+            db.session.commit()
+        except:
+            return apology("Sorry! Some error occurred")
+        # Flash the message
+        # db.session.commit()
+        flash("Added a new task", category="primary")
+
+        # Return to homepage
+        return redirect("/")
+
+
+@app.route("/update/<id>/<toUpd>", methods=["POST"])
+def update(id, toUpd):
+    if toUpd == "email":
+        email = request.form.get("email")
+        # Update the user's email in the database
+        db.execute("UPDATE users SET email = ? WHERE id = ?", email, id)
+    if toUpd == "username":
+        username = request.form.get("username")
+        # Update the user's username in the database
+        db.execute("UPDATE users SET username = ? WHERE id = ?", username, id)
+        session["username"] = username
+    if toUpd == "password":
+        oldPass = request.form.get("oldpass")
+        newPass = request.form.get("newpass")
+        cnfPass = request.form.get("cnfpass")
+        hash = db.execute("SELECT * FROM users WHERE id = ?", id)[0]["hash"]
+        if not oldPass:
+            flash("Provide Old password", "warning")
+        if not newPass:
+            flash("Provide New password", "warning")
+        if not cnfPass:
+            flash("Confirm New password", "warning")
+        if check_password_hash(hash, oldPass):
+            if cnfPass == newPass:
+                new_hash = generate_password_hash(cnfPass)
+                # Update the user's password in the database
+                db.execute("UPDATE users SET hash = ? WHERE id = ?", new_hash, id)
+            else:
+                flash(
+                    "New password didn't matched with confirm password",
+                    category="warning",
+                )
+        else:
+            flash("Old password didn't match. Try again!", category="danger")
+
     return redirect("/")
 
