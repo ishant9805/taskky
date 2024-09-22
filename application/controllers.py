@@ -169,20 +169,27 @@ def newTask():
 
 @app.route("/update/<id>/<toUpd>", methods=["POST"])
 def update(id, toUpd):
+    user = Users.query.filter_by(user_id=id).first()
     if toUpd == "email":
         email = request.form.get("email")
         # Update the user's email in the database
-        db.execute("UPDATE users SET email = ? WHERE id = ?", email, id)
+        user.email = email
+        db.session.commit()
     if toUpd == "username":
         username = request.form.get("username")
         # Update the user's username in the database
-        db.execute("UPDATE users SET username = ? WHERE id = ?", username, id)
-        session["username"] = username
+        user2 = Users.query.filter_by(username=username).first()
+        if user2:
+            return apology("Username already exists.")
+        else:
+            user.username = username
+            db.session.commit()
+            session["username"] = username
     if toUpd == "password":
         oldPass = request.form.get("oldpass")
         newPass = request.form.get("newpass")
         cnfPass = request.form.get("cnfpass")
-        hash = db.execute("SELECT * FROM users WHERE id = ?", id)[0]["hash"]
+        hash = user.hash
         if not oldPass:
             flash("Provide Old password", "warning")
         if not newPass:
@@ -193,7 +200,7 @@ def update(id, toUpd):
             if cnfPass == newPass:
                 new_hash = generate_password_hash(cnfPass)
                 # Update the user's password in the database
-                db.execute("UPDATE users SET hash = ? WHERE id = ?", new_hash, id)
+                user.hash = new_hash
             else:
                 flash(
                     "New password didn't matched with confirm password",
