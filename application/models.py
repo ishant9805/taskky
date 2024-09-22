@@ -11,6 +11,9 @@ class Users(db.Model):
     hash = db.Column(db.String, nullable=False)
     tasks = db.relationship("Tasks", backref='user', lazy=True)
 
+    def __repr__(self) -> str:
+        return f"[Username: {self.username}, Email: {self.email}]"
+
 class Tasks(db.Model):
     __tablename__ = "tasks"
     task_id =  db.Column(db.Integer, autoincrement=True, primary_key=True)
@@ -23,8 +26,8 @@ class Tasks(db.Model):
     # Foreign key linking to Users table
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
 
-    def __str__(self) -> str:
-        return f"[Task ID: {self.task_id}, Task: {self.task}, User: {self.user_id}" 
+    def __repr__(self) -> str:
+        return f"[Task ID: {self.task_id}, Task: {self.task}, User: {self.user_id}]"
 
 # class Userstask(db.Model):
 #     __tablename__ = "userstask"
