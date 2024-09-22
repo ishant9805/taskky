@@ -37,9 +37,9 @@ document.querySelector('.btn-closer').addEventListener('click', function() {
 
 // Add event listeners to all edit buttons
 document.querySelectorAll('.editTask').forEach(button => {
-    button.addEventListener('click', function() {
-        var taskId = this.getAttribute('data-task-id');
-        var taskname = document.getElementById("taskName" + taskId).innerText;
+    button.addEventListener('click', () => {
+        var taskId = button.getAttribute('data-task-id');
+        var taskname = document.getElementById("taskName" + taskId).innerText;;
         var desc = document.getElementById("taskDesc" + taskId).innerText;
         var due = document.getElementById("taskDue" + taskId).innerText;
         // Set the task name in the modal's input field

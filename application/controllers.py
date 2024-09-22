@@ -127,6 +127,7 @@ def logout():
 
 
 @app.route("/newTask", methods=["GET", "POST"])
+@login_required
 def newTask():
     if request.method == "POST":
         taskname = request.form.get("taskname")
@@ -143,12 +144,12 @@ def newTask():
             flash(f"You must provide task due date.", category="warning")
             return redirect("/")
 
-        # Convert due_date from 'YYYY-MM-DDTHH:MM' to 'YYYY-MM-DD HH:MM:SS'
+        # Convert due_date from 'YYYY-MM-DDTHH:MM' to python "datetime" object
         due_date = due.split('T')
         date = due_date[0].split("-")
         time = due_date[1].split(":") 
         due_date = datetime.datetime(year=int(date[0]), month=int(date[1]), day=int(date[2]), hour=int(time[0]), minute=int(time[1]))
-        print(due_date)
+        # print(due_date)
         # Get user id
         user_id = session["user_id"]
 
@@ -168,6 +169,7 @@ def newTask():
 
 
 @app.route("/update/<id>/<toUpd>", methods=["POST"])
+@login_required
 def update(id, toUpd):
     user = Users.query.filter_by(user_id=id).first()
     if toUpd == "email":
@@ -211,3 +213,62 @@ def update(id, toUpd):
 
     return redirect("/")
 
+
+@app.route("/edit_task/<int:task_id>", methods=["POST"])
+@login_required
+def editTask(task_id):
+    taskname = request.form.get("taskname")
+    taskdesc = request.form.get("taskdesc")
+    due = request.form.get("due")
+
+    if not taskname:
+        flash(f"You must provide task.", category="warning")
+        return redirect("/")
+    if not taskdesc:
+        flash(f"You must provide task description.", category="warning")
+        return redirect("/")
+    if not due:
+        flash(f"You must provide task due date.", category="warning")
+        return redirect("/")
+    # Convert due_date from 'YYYY-MM-DDTHH:MM' to python "datetime" object
+    due_date = due.split('T')
+    date = due_date[0].split("-")
+    time = due_date[1].split(":") 
+    due_date = datetime.datetime(year=int(date[0]), month=int(date[1]), day=int(date[2]), hour=int(time[0]), minute=int(time[1]))
+
+
+    # Update the database
+    task = Tasks.query.filter_by(task_id=task_id, user_id=session['user_id']).first()
+    if task:
+        task.task = taskname
+        task.due_date = due_date
+        task.task_description = taskdesc
+        db.session.commit()
+        flash(f"Updated task '{taskname}' successfully.", category="secondary")
+        return redirect("/")
+    else:
+        return apology("Sorry! Some error occurred.")
+
+
+@app.route("/delete_task/<int:task_id>", methods=["POST"])
+def deleteTask(task_id):
+    rows = db.execute("SELECT * FROM tasks WHERE id = ?", task_id)
+    taskname = rows[0]["task"]
+    db.execute("DELETE FROM tasks WHERE id = ?", task_id)
+    flash(f"Deleted task '{taskname}' successfully.", category="danger")
+    return redirect("/")
+
+
+@app.route("/done/<int:status>/<int:task_id>", methods=["POST"])
+def done(status, task_id):
+    if status == 0:
+        rows = db.execute("SELECT * FROM tasks WHERE id = ?", task_id)
+        taskname = rows[0]["task"]
+        db.execute("UPDATE tasks SET completed = ? WHERE id = ?", 1, task_id)
+        flash(f"Congratulations🎉! on completing task {taskname}.", category="success")
+    else:
+        rows = db.execute("SELECT * FROM tasks WHERE id = ?", task_id)
+        taskname = rows[0]["task"]
+        db.execute("UPDATE tasks SET completed = ? WHERE id = ?", 0, task_id)
+        flash(f"You marked the task {taskname} as incompleted.", category="warning")
+    return redirect("/")
