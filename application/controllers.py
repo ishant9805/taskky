@@ -69,28 +69,30 @@ def login():
 
     if request.method == "POST":
         # Ensure username was submitted
-        if not request.form.get("username"):
+        username = request.form.get("username")
+        password = request.form.get("password")
+        if not username:
             return apology("must provide username", 403)
 
         # Ensure password was submitted
-        elif not request.form.get("password"):
+        elif not password:
             return apology("must provide password", 403)
 
         # Query database for username
-        rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get("username")
-        )
-
+        # rows = db.execute(
+        #     "SELECT * FROM users WHERE username = ?", request.form.get("username")
+        # )
+        user = Users.query.filter(Users.username == username).one()
+        if not user:
+            return apology("invalid username", 403)
         # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(
-            rows[0]["hash"], request.form.get("password")
-        ):
+        if not check_password_hash(user.hash, password):
             return apology("invalid username and/or password", 403)
 
         # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-        print(rows)
-        session["username"] = rows[0]["username"]
+        session["user_id"] = user.user_id
+        # print(rows)
+        session["username"] = user.username
 
         # Redirect user to home page
         return redirect("/")
