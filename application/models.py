@@ -21,7 +21,10 @@ class Tasks(db.Model):
     task_created = db.Column(db.DateTime, default=func.now())
 
     # Foreign key linking to Users table
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False) 
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+
+    def __str__(self) -> str:
+        return f"[Task ID: {self.task_id}, Task: {self.task}, User: {self.user_id}" 
 
 # class Userstask(db.Model):
 #     __tablename__ = "userstask"
