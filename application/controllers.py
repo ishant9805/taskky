@@ -16,9 +16,13 @@ def home():
     """Show users tasks"""
     user_id = session["user_id"]
     # Query the database for tasks related to this user
-    tasks = "Hello"
+    user = Users.query.filter(Users.user_id == user_id).first()
+    tasks = user.tasks
+    
     print("User:", user_id)
     print(session["username"])
+
+    print(tasks)
 
     return render_template("home.html", tasks=tasks)
 
@@ -98,3 +102,24 @@ def login():
         return redirect("/")
     else:
         return render_template("login.html")
+
+@app.route("/profile")
+@login_required
+def profile():
+    """Profile customizations"""
+    user_id = session["user_id"]
+    # details = db.execute("SELECT * FROM users WHERE id = ?", user_id)
+    details = Users.query.filter_by(user_id = user_id).one()
+    return render_template("profile.html", details=details)
+
+
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Clear all cache
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
+

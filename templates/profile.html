@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block main %}
-    <h1 class="ms-20">Hello, <span class="text-decoration-underline">{{ details[0].username }}</span></h1>
+    <h1 class="ms-20">Hello, <span class="text-decoration-underline">{{ details.username }}</span></h1>
     <div class="text-center">
         <form action="/update/{{ session['user_id'] }}/email" method="post" class="mb-3 row">
             <label for="email" class="col-sm-2 col-form-label fw-bold">Email</label>
