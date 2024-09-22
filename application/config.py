@@ -9,6 +9,6 @@ class Config():
 	SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 class LocalDevelopmentConfig(Config):
-	SQLITE_DB_DIR = os.path.join(BASE_DIR, "./db_directory")
-	SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "taskky.db")
+	SQLITE_DB_DIR = os.path.join(BASE_DIR, "../db_directory")
+	SQLALCHEMY_DATABASE_URI = "sqlite:///" + os.path.join(SQLITE_DB_DIR, "database.sqlite3") 
 	DEBUG = True
