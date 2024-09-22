@@ -10,7 +10,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from .models import Users, Tasks
 from .database import db
 
-from helpers import apology, login_required
+from application.helpers import apology, login_required
 
 @app.route("/")
 @login_required
@@ -252,9 +252,10 @@ def editTask(task_id):
 
 @app.route("/delete_task/<int:task_id>", methods=["POST"])
 def deleteTask(task_id):
-    rows = db.execute("SELECT * FROM tasks WHERE id = ?", task_id)
-    taskname = rows[0]["task"]
-    db.execute("DELETE FROM tasks WHERE id = ?", task_id)
+    task = Tasks.query.filter_by(task_id=task_id, user_id=session["user_id"]).one()
+    taskname = task.task
+    db.session.delete(task)
+    db.session.commit()
     flash(f"Deleted task '{taskname}' successfully.", category="danger")
     return redirect("/")
 
@@ -262,13 +263,15 @@ def deleteTask(task_id):
 @app.route("/done/<int:status>/<int:task_id>", methods=["POST"])
 def done(status, task_id):
     if status == 0:
-        rows = db.execute("SELECT * FROM tasks WHERE id = ?", task_id)
-        taskname = rows[0]["task"]
-        db.execute("UPDATE tasks SET completed = ? WHERE id = ?", 1, task_id)
+        task = Tasks.query.filter_by(task_id=task_id, user_id=session["user_id"]).one()
+        taskname = task.task
+        task.completed = 1
+        db.session.commit()
         flash(f"Congratulations🎉! on completing task {taskname}.", category="success")
     else:
-        rows = db.execute("SELECT * FROM tasks WHERE id = ?", task_id)
-        taskname = rows[0]["task"]
-        db.execute("UPDATE tasks SET completed = ? WHERE id = ?", 0, task_id)
+        task = Tasks.query.filter_by(task_id=task_id, user_id=session["user_id"]).one()
+        taskname = task.task
+        task.completed = 0
+        db.session.commit()
         flash(f"You marked the task {taskname} as incompleted.", category="warning")
     return redirect("/")

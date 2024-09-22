@@ -57,7 +57,7 @@
                 <div class="row">
                     {% for task in tasks %}
                         <div class="col-sm-12 col-md-6 col-lg-4 mb-4">
-                <!-- Tried making card after visiting bootstrao website -->
+                <!-- Tried making card after visiting bootstrap website -->
                 <!-- Card code here -->
                             <div class="card text-white bg-dark">
                                 <div class="fw-bold card-header d-flex justify-content-between align-items-center">
@@ -76,14 +76,14 @@
                     <!-- If task is not completed, shows option to mark it complete -->
                                 {% if task.completed == 0 %}
                                     <div class="card-footer bg-transparent border-success">
-                                        <form action="/done/0/{{ task.id }}" method="post">
-                                            <button class="btn btn-success" type="submit">Completed</button>
+                                        <form action="/done/0/{{ task.task_id }}" method="post">
+                                            <button class="btn btn-success" type="submit">Done</button>
                                         </form>
                                     </div>
                     <!-- Else shows option for mark it as incomplete -->
                                 {% else %}
                                     <div class="card-footer bg-transparent border-success">
-                                        <form action="/done/1/{{ task.id }}" method="post" class="">
+                                        <form action="/done/1/{{ task.task_id }}" method="post" class="">
                                             <button class="btn btn-danger" type="submit">Mark as incomplete</button>
                                         </form>
                                     </div>
