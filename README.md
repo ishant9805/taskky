@@ -1,7 +1,7 @@
 # Taskky: A Task Management Web Application
 
 #### Video Demo: https://youtu.be/asmK4zMQ50g
-#### Live Website: ishant9805.pythonanywhere.com/
+#### Live Website: https://ishant9805.pythonanywhere.com/
 #### Description:
 Taskky is a web application designed for users to manage their daily tasks effectively. Built with Flask, this application allows users to register, login, add tasks, edit them, and mark them as completed.
 
@@ -50,4 +50,4 @@ Taskky is a simplistic yet powerful tool for managing daily tasks, showcasing th
 
 ---
 
-Taskky is developed by Ishant from India🇮🇳. For any inquiries or contributions, please contact ishant9805@gmail.com.
+Taskky is developed by Ishant from India. For any inquiries or contributions, please contact ishant9805@gmail.com.
